@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<title>Clipboard.js &mdash; Tuts+</title>
+	<meta rel="description" content="Copy content with Clipboard.js">
+	<link rel='stylesheet'  href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,300italic,300|Enriqueta:400,700'>
+	<link rel="stylesheet" href="css/demo.css">
+	<link rel="stylesheet" href="css/prism.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipboard.min.js"></script>
+	<script src="js/prism.js"></script>
+</head>
+<body>
+	<header class="site-header cf">
+		<h1>Clipboard.js</h1>
+		<a class="back-to-article" href="">Back to the Tutorial</a>
+	</header>
+
+	<div class="site-content cf">
+
+<h1>Intelligent Color Output</h1>
+
+<p>LESS allows our styles to be a little bit smarter. For example, we can make our styles “think” and decide what color to apply under certain conditions. Assuming we are creating a website template, this is the basic style button, and you plan to extend it with various colors and styles. But how can we control the color outputs? We certainly do not want the text color to be dark on a dark background, or vice versa. We need to ensure that the text retains contrast so that it is easier to read, and this is where the <code>contrast()</code> functions come into play.</p>
+		
+<pre class="language-less">
+<code>@body-bg: #000;
+body {
+	background-color: @body-bg;
+	color: contrast(@body-bg);
+}</code>
+</pre>
+
+<p>In the above example, we set the color through the contrast() function. This ensures that the text color has enough contrast against the background color. In this case, the text should return <code>#fff</code> since the background is <code>#000</code>. If you set the background to a light color, such as white, whitesmoke, or skyblue, the color should return <code>#000</code>.</p>
+
+<pre class="language-less">
+<code>body {
+  background-color: #000;
+  color: #fff;
+}</code>
+</pre>
+
+<p>You can also customize the color for dark and light contrast. In the following example, the color will return <code>#999</code> or <code>#777</code> in place of <code>#fff</code> and <code>#000</code>.</p>
+
+<pre class="language-less">
+<code>@body-bg : #f0f0f0;
+@color-light : #999;
+@color-dark  : #777;
+ 
+body {
+    background-color: @body-bg;
+    color: contrast(@body-bg, @color-dark, @color-light);
+}</code>
+</pre>
+
+<p>Often, I also prefer not to output a style declaration if the color is transparent, especially for the background color. To do so, encapsulate the <code>background</code> declaration within LESS Mixin Guards.</p>
+
+<pre class="language-less">
+<code>@bg: transparent;
+.element {
+    &amp; when not (@bg = transaprent) {
+        background: @bg;
+    }
+}</code>
+</pre>
+
+<p>You could also do the same for declaring <code>border</code> and <code>color</code> properties, and save a couple of lines in your stylesheet by eliminating unnecessary rules.</p>
+
+</div>
+
+<script>
+(function($){
+	
+
+	$('pre').each(function() {
+		var $this      = $(this),
+				$className = $this.attr('class').split('-');	
+
+				// check if the pre has 'language' class.
+				if ( $className[0] === 'language' ) {
+
+					var $theID  = 'code-content-' + $this.index('pre');
+					var $theBtn = $('<button>').text('Copy').attr({ 
+						'data-clipboard-target' : '#' + $theID,
+						'class'                 : 'copy-button'
+					});
+					
+					$this.find('code').attr('id', $theID);
+					$theBtn.insertAfter($this);
+
+				}
+	});
+	
+	var copyCode = new Clipboard('.copy-button');
+	
+	copyCode.on('success', function(e) {
+		 e.clearSelection();
+	});
+	
+})(jQuery);
+</script>
+</body>
+</html>
