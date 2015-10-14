@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Clipboard.js &mdash; Tuts+</title>
@@ -7,23 +7,28 @@
 	<link rel='stylesheet'  href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,300italic,300|Enriqueta:400,700'>
 	<link rel="stylesheet" href="css/demo.css">
 	<link rel="stylesheet" href="css/prism.css">
+	<link rel="stylesheet" href="css/tooltip.css">
 	<link rel="stylesheet" href="css/style.css">
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipboard.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+	<script src="js/tooltip.min.js"></script>
 	<script src="js/prism.js"></script>
 </head>
 <body>
-	<header class="site-header cf">
-		<h1>Clipboard.js</h1>
-		<a class="back-to-article" href="">Back to the Tutorial</a>
-	</header>
 
-	<div class="site-content cf">
+<header class="site-header cf">
+	<h1>Clipboard.js</h1>
+	<a class="back-to-article" href="">Back to the Tutorial</a>
+</header>
 
+<div class="site-content" id="content">
+
+<section class="content-section content-section--main">
 <h1>Intelligent Color Output</h1>
 
 <p>LESS allows our styles to be a little bit smarter. For example, we can make our styles “think” and decide what color to apply under certain conditions. Assuming we are creating a website template, this is the basic style button, and you plan to extend it with various colors and styles. But how can we control the color outputs? We certainly do not want the text color to be dark on a dark background, or vice versa. We need to ensure that the text retains contrast so that it is easier to read, and this is where the <code>contrast()</code> functions come into play.</p>
-		
+
 <pre class="language-less">
 <code>@body-bg: #000;
 body {
@@ -66,39 +71,82 @@ body {
 </pre>
 
 <p>You could also do the same for declaring <code>border</code> and <code>color</code> properties, and save a couple of lines in your stylesheet by eliminating unnecessary rules.</p>
+</section>
+
+<section class="content-section content-section--paste" id="paste-section">
+	<h1>Paste it here</h1>
+	<div id="paste-content" contenteditable="true"></div>
+</section>
 
 </div>
 
 <script>
-(function($){
+(function(){
+
+	// Get the elements.
+	// - the 'pre' element.
+	// - the 'div' with the 'paste-content' id.
 	
+	var pre = document.getElementsByTagName('pre');
+	var pasteContent = document.getElementById('paste-content');
 
-	$('pre').each(function() {
-		var $this      = $(this),
-				$className = $this.attr('class').split('-');	
+	// Add a copy button in the 'pre' element.
+	// which only has the className of 'language-'.
+	
+	for (var i = 0; i < pre.length; i++) {
+		var isLanguage = pre[i].className.indexOf('language-');
 
-				// check if the pre has 'language' class.
-				if ( $className[0] === 'language' ) {
+		if ( isLanguage === 0 ) {
+			var button           = document.createElement('button');
+					button.innerText = 'Copy';
+					button.className = 'copy-button';
 
-					var $theID  = 'code-content-' + $this.index('pre');
-					var $theBtn = $('<button>').text('Copy').attr({ 
-						'data-clipboard-target' : '#' + $theID,
-						'class'                 : 'copy-button'
-					});
-					
-					$this.find('code').attr('id', $theID);
-					$theBtn.insertAfter($this);
-
-				}
+			pre[i].appendChild(button);
+		}
+	};
+	
+	// Run Clipboard
+	// - clearSelection to prevent "discontiguous" error.
+	// https://github.com/zenorocha/clipboard.js/pull/32
+	
+	var copyCode = new Clipboard('.copy-button', {
+		target: function(trigger) {
+			document.getSelection().removeAllRanges();
+			return trigger.previousElementSibling;
+    }
 	});
+
+	// On success:
+	// - clearSelection to prevent "discontiguous" error 
+	// https://github.com/zenorocha/clipboard.js/pull/32
+	// - Change the "Copy" text to "Copied".
+	// - Swap it to "Copy" in 2s.
+	// - Lead user to the "contenteditable" area with Velocity scroll.
 	
-	var copyCode = new Clipboard('.copy-button');
-	
-	copyCode.on('success', function(e) {
-		 e.clearSelection();
+	copyCode.on('success', function(event) {
+		event.clearSelection();
+		event.trigger.innerText = 'Copied';
+		window.setTimeout(function() {
+			event.trigger.innerText = 'Copy';
+		}, 2000);
+
+		$.Velocity(pasteContent, 'scroll', { 
+			duration: 1000 
+		});
 	});
+
+	// On error (Safari):
+	// - Change the  "Press Ctrl+C to copy"
+	// - Swap it to "Copy" in 2s.
 	
-})(jQuery);
+	copyCode.on('error', function(event) { 
+		event.trigger.innerText = 'Press "Ctrl + C" to copy';
+		window.setTimeout(function() {
+			event.trigger.innerText = 'Copy';
+		}, 2000);
+	});
+
+})();
 </script>
 </body>
 </html>
