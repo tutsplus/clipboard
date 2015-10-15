@@ -94,14 +94,15 @@ body {
 	// which only has the className of 'language-'.
 	
 	for (var i = 0; i < pre.length; i++) {
-		var isLanguage = pre[i].className.indexOf('language-');
-
+		var 
+				isLanguage = pre[i].className.indexOf('language-');
+				
 		if ( isLanguage === 0 ) {
 			var button           = document.createElement('button');
-					button.innerText = 'Copy';
 					button.className = 'copy-button';
+					button.textContent = 'Copy';
 
-			pre[i].appendChild(button);
+					pre[i].appendChild(button);
 		}
 	};
 	
