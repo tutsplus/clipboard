@@ -12,7 +12,6 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.2/clipboard.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
-	<script src="js/tooltip.min.js"></script>
 	<script src="js/prism.js"></script>
 </head>
 <body>
@@ -29,8 +28,8 @@
 
 <p>LESS allows our styles to be a little bit smarter. For example, we can make our styles “think” and decide what color to apply under certain conditions. Assuming we are creating a website template, this is the basic style button, and you plan to extend it with various colors and styles. But how can we control the color outputs? We certainly do not want the text color to be dark on a dark background, or vice versa. We need to ensure that the text retains contrast so that it is easier to read, and this is where the <code>contrast()</code> functions come into play.</p>
 
-<pre class="language-less">
-<code>@body-bg: #000;
+<pre>
+<code class="language-less">@body-bg: #000;
 body {
 	background-color: @body-bg;
 	color: contrast(@body-bg);
@@ -39,8 +38,8 @@ body {
 
 <p>In the above example, we set the color through the contrast() function. This ensures that the text color has enough contrast against the background color. In this case, the text should return <code>#fff</code> since the background is <code>#000</code>. If you set the background to a light color, such as white, whitesmoke, or skyblue, the color should return <code>#000</code>.</p>
 
-<pre class="language-less">
-<code>body {
+<pre>
+<code class="language-less">body {
   background-color: #000;
   color: #fff;
 }</code>
@@ -48,8 +47,8 @@ body {
 
 <p>You can also customize the color for dark and light contrast. In the following example, the color will return <code>#999</code> or <code>#777</code> in place of <code>#fff</code> and <code>#000</code>.</p>
 
-<pre class="language-less">
-<code>@body-bg : #f0f0f0;
+<pre>
+<code class="language-less">@body-bg : #f0f0f0;
 @color-light : #999;
 @color-dark  : #777;
  
@@ -61,8 +60,8 @@ body {
 
 <p>Often, I also prefer not to output a style declaration if the color is transparent, especially for the background color. To do so, encapsulate the <code>background</code> declaration within LESS Mixin Guards.</p>
 
-<pre class="language-less">
-<code>@bg: transparent;
+<pre>
+<code class="language-less">@bg: transparent;
 .element {
     &amp; when not (@bg = transaprent) {
         background: @bg;
@@ -94,9 +93,8 @@ body {
 	// which only has the className of 'language-'.
 	
 	for (var i = 0; i < pre.length; i++) {
-		var 
-				isLanguage = pre[i].className.indexOf('language-');
-				
+		var isLanguage = pre[i].children[0].className.indexOf('language-');
+
 		if ( isLanguage === 0 ) {
 			var button           = document.createElement('button');
 					button.className = 'copy-button';
@@ -107,28 +105,23 @@ body {
 	};
 	
 	// Run Clipboard
-	// - clearSelection to prevent "discontiguous" error.
-	// https://github.com/zenorocha/clipboard.js/pull/32
 	
 	var copyCode = new Clipboard('.copy-button', {
 		target: function(trigger) {
-			// document.getSelection().removeAllRanges();
 			return trigger.previousElementSibling;
     }
 	});
 
 	// On success:
-	// - clearSelection to prevent "discontiguous" error 
-	// https://github.com/zenorocha/clipboard.js/pull/32
 	// - Change the "Copy" text to "Copied".
 	// - Swap it to "Copy" in 2s.
 	// - Lead user to the "contenteditable" area with Velocity scroll.
 	
 	copyCode.on('success', function(event) {
 		event.clearSelection();
-		event.trigger.innerText = 'Copied';
+		event.trigger.textContent = 'Copied';
 		window.setTimeout(function() {
-			event.trigger.innerText = 'Copy';
+			event.trigger.textContent = 'Copy';
 		}, 2000);
 
 		$.Velocity(pasteContent, 'scroll', { 
@@ -141,10 +134,10 @@ body {
 	// - Swap it to "Copy" in 2s.
 	
 	copyCode.on('error', function(event) { 
-		event.trigger.innerText = 'Press "Ctrl + C" to copy';
+		event.trigger.textContent = 'Press "Ctrl + C" to copy';
 		window.setTimeout(function() {
-			event.trigger.innerText = 'Copy';
-		}, 2000);
+			event.trigger.textContent = 'Copy';
+		}, 5000);
 	});
 
 })();
